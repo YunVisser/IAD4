@@ -9,6 +9,14 @@ const int ledPin2 = 22;
 int fsr1 = 33; // verbonden met analoog
 int fsr2 = 36; // verbonden met analoog
 
+const int trigPin = 5;
+const int echoPin = 18;
+//define sound speed in cm/uS
+#define SOUND_SPEED 0.034
+
+long duration;
+float distanceCm;
+
 HTTPClient client;
 
 
@@ -16,8 +24,8 @@ void setup()
 {
   Serial.begin(9600);
 
-  pinMode(PushButtonT, INPUT); // pin 4 digital input
-  pinMode(PushButtonW, INPUT);  // pin 15
+  pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
+  pinMode(echoPin, INPUT); // Sets the echoPin as an Input
 
   pinMode(fsr1, INPUT); //  pin 33 //0 tot 1
   pinMode(fsr2, INPUT); //  pin 36 //0 tot 1
@@ -77,24 +85,43 @@ void loop()
     Serial.println(httpResultCode);
     delay(3000);
   }
+
+
+  // Clears the trigPin
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  // Sets the trigPin on HIGH state for 10 micro seconds
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  // Reads the echoPin, returns the sound wave travel time in microseconds
+  duration = pulseIn(echoPin, HIGH);
+
+  // Calculate the distance
+  distanceCm = duration * SOUND_SPEED / 2;
+
+
+  // Prints the distance in the Serial Monitor
+  Serial.print("Distance (cm): ");
+  Serial.println(distanceCm);
+
+  int fsrWaarde = analogRead(fsr1);
+  Serial.println(fsrWaarde);
+
+  if (fsrWaarde < 4000) {
+    digitalWrite(ledPin1, HIGH);
+  } else {
+    digitalWrite(ledPin1, LOW);
+  }
+
+  int fsrWaarde2 = analogRead(fsr2);
+  Serial.println(fsrWaarde2);
+
+  if (fsrWaarde2 < 4000) {
+    digitalWrite(ledPin2, HIGH);
+  } else {
+    digitalWrite(ledPin2, LOW);
+  }
   delay(1000);
 }
-
-//
-//  int fsrWaarde = analogRead(fsr1);
-//  Serial.println(fsrWaarde);
-//
-//  if (fsrWaarde < 4000) {
-//    digitalWrite(ledPin1, HIGH);
-//  } else {
-//    digitalWrite(ledPin1, LOW);
-//  }
-//
-//  int fsrWaarde2 = analogRead(fsr2);
-//  Serial.println(fsrWaarde2);
-//
-//  if (fsrWaarde2 < 4000) {
-//    digitalWrite(ledPin2, HIGH);
-//  } else {
-//    digitalWrite(ledPin2, LOW);
-//  }
